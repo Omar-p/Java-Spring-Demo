@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+       xmlns:aop="http://www.springframework.org/schema/aop">
+
+
+    <bean id="passengerDao" class="com.pluralsight.springaop.example1.PassengerDaoImpl"/>
+    <bean id="loggingAspect" class="com.pluralsight.springaop.example1.LoggingAspect"/>
+    <aop:config>
+        <aop:aspect ref="loggingAspect">
+            <aop:pointcut id="loggingPointcut" expression="execution(* com.pluralsight.springaop.example1.PassengerDaoImpl.*(..))"/>
+            <aop:before pointcut-ref="loggingPointcut" method="logBefore"/>
+            <aop:after pointcut-ref="loggingPointcut" method="logAfter"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
