@@ -1,0 +1,6 @@
+# containerize it and run as knative
+# or use functional adapter to prepare it to deploy tp aws lambda
+spring:
+  cloud:
+    function:
+      definition: uppercase|reverseReactive
