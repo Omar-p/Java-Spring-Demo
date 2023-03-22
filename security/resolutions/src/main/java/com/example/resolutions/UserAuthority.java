@@ -19,7 +19,6 @@ public class UserAuthority {
   UUID id;
 
   @ManyToOne
-  @JoinColumn(name = "username", referencedColumnName = "username")
   User user;
 
   String authority;

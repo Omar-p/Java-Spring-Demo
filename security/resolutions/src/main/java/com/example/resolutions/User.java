@@ -27,11 +27,18 @@ public class User {
 
   Boolean enabled = true;
 
-  @OneToMany(cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @Builder.Default
-  List<UserAuthority> authorities = new ArrayList<>();
+  List<UserAuthority> userAuthorities = new ArrayList<>();
 
+  public User(User user) {
+    this.id = user.id;
+    this.username = user.username;
+    this.password = user.password;
+    this.enabled = user.enabled;
+    this.userAuthorities = new ArrayList<>(user.userAuthorities);
+  }
   public void addAuthority(String authority) {
-    this.authorities.add(new UserAuthority(this, authority));
+    this.userAuthorities.add(new UserAuthority(this, authority));
   }
 }
