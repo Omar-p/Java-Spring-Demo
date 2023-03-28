@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @SpringBootApplication
@@ -26,16 +25,11 @@ public class ResolutionsApplication {
                 .requestMatchers(HttpMethod.GET, "/resolutions/**").hasAuthority("READ")
                 .anyRequest().hasAuthority("WRITE")
         )
-        .httpBasic()
-        .and()
+        .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
         .csrf(AbstractHttpConfigurer::disable)
         .build();
   }
 
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
 
   public static void main(String[] args) {
     SpringApplication.run(ResolutionsApplication.class, args);

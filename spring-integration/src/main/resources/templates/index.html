@@ -23,7 +23,7 @@
                 <p class="lead">Early bird prices are still available!</p>
                 <div th:if="${#fields.hasErrors('ticketType')}" class="alert alert-danger" role="alert">Please select a ticket type.</div>
                 <div class="card-deck mb-3 text-center" data-toggle="buttons">
-                    <input id="ticketType" type="hidden" th:field="*{ticketType}">
+                    <input id="ticketType" type="hidden" th:field="*{ticketType}" th:value="S">
                     <div id="ticketTypePremium" class="card mb-4 shadow" th:classappend="${registration.ticketType == 'P' ? 'selected' : ''}">
                         <div class="card-header">
                             <h4>Premium</h4>

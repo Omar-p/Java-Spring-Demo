@@ -1,29 +1,23 @@
 package com.pluralsight.demo.service;
 
-import com.pluralsight.demo.database.Attendee;
-import com.pluralsight.demo.database.AttendeeTicket;
-import com.pluralsight.demo.database.AttendeeTicketRepository;
-import com.pluralsight.demo.database.DiscountCode;
-import com.pluralsight.demo.database.DiscountCodeRepository;
-import com.pluralsight.demo.database.PricingCategory;
-import com.pluralsight.demo.database.PricingCategoryRepository;
-import com.pluralsight.demo.database.TicketPrice;
-import com.pluralsight.demo.database.TicketPriceRepository;
-import com.pluralsight.demo.database.TicketType;
-import com.pluralsight.demo.database.TicketTypeRepository;
+import com.pluralsight.demo.config.SwagGateway;
+import com.pluralsight.demo.database.*;
 import com.pluralsight.demo.model.AttendeeRegistration;
+import com.pluralsight.demo.model.Swag;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
+
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -91,5 +85,14 @@ public class RegistrationService {
 
         return ticketPriceRepository.findByTicketTypeAndPricingCategory(ticketType, pricingCategory)
                 .orElseThrow(() -> new EntityNotFoundException("Cannot determine ticket price for ticket type '" + ticketType.getCode() + "' and pricing category '" + pricingCategory.getCode() + "'"));
+    }
+
+    @Autowired
+    private SwagGateway swagGateway;
+
+    public void commit(String userId) {
+        LOG.debug("Committing registration for user: {}", userId);
+        final Message<Swag> message = MessageBuilder.withPayload(new Swag("T-Shirt")).build();
+        swagGateway.sendSwag(message);
     }
 }

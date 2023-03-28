@@ -2,18 +2,14 @@ package com.example.resolutions;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class ResolutionInitializer implements SmartInitializingSingleton {
   private final ResolutionRepository resolutions;
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
 
   @Override
   public void afterSingletonsInstantiated() {
@@ -28,11 +24,5 @@ public class ResolutionInitializer implements SmartInitializingSingleton {
     this.resolutions.save(new Resolution("Run a Marathon", carolId));
     this.resolutions.save(new Resolution("Run an Errand", carolId));
 
-    final User omar = User.builder().username("omar").password(passwordEncoder.encode("omar")).enabled(true).build();
-    omar.addAuthority("READ");
-    final User josh = User.builder().username("josh").password(passwordEncoder.encode("josh")).enabled(true).build();
-    josh.addAuthority("READ");
-    josh.addAuthority("WRITE");
-    userRepository.saveAll(List.of(omar, josh));
   }
 }
