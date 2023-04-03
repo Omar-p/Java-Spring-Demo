@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: "2023-04-01T03:51:39Z"
+  labels:
+    kubernetes.io/metadata.name: cnj
+  name: cnj
+  resourceVersion: "307434"
+  uid: 1c1e316b-a579-485c-bdb7-a39d63c3fd7b
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
