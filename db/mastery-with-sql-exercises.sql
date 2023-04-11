@@ -329,6 +329,9 @@ WHERE first_name LIKE '%A%A%';
 -- and read about DISTINCT ON. See if you can figure out how you would use it in a query to return the most recent rental
 -- for each customer
 -- Table(s) to use: rental
+SELECT DISTINCT ON (customer_id, rental_date)
+FROM rental
+ORDER BY customer_id, rental_date DESC;
 
 
 -- 3.43 Write a query to list all the customers with an email address but
@@ -338,3 +341,129 @@ SELECT first_name,
        email
 FROM customer
 WHERE email <> first_name || '.' || last_name || '@sakilacustomer.org';
+
+
+-- 4.1 Write a query to return the total count of customers in the customer table and
+-- the count of how many customers provided an email address
+SELECT count(*) AS "# CUSTOMERS",
+       count(email) AS "# CUSTOMERS WHO PROVIDE AN EMAIL"
+FROM customer;
+
+-- 4.2 Building on the previous exercise, now return an additional result showing the
+-- percentage of customers with an email address (as a helpful hint, if you’re getting 0
+-- try multiplying the fraction by 100.0
+-- - we’ll examine why this is necessary in an upcoming chapter on data types)
+SELECT count(*) AS "# CUSTOMERS",
+       count(email) AS "# CUSTOMERS WHO PROVIDE AN EMAIL",
+       count(email) * 100.0 / COUNT(*) AS "% of customers with an email"
+FROM customer;
+
+-- 4.3 Write a query to return the number of distinct customers who have made payments
+-- Table(s) to use: payment
+SELECT count(DISTINCT customer_id)  AS "# distinct customers who have made payments"
+FROM payment;
+
+-- 4.4 What is the average length of time films are rented out for
+-- Table(s) to use: rental
+SELECT avg(return_date - rental_date)
+FROM rental;
+
+
+-- 4.5 Write a query to return the sum total of all payment amounts received
+-- Table(s) to use: payment
+SELECT sum(amount)
+FROM payment;
+
+-- 4.6 List the number of films each actor has appeared in and order the results from most popular to least
+-- Table(s) to use: film_actor
+SELECT  actor_id,
+        count(film_id)
+FROM film_actor
+GROUP BY actor_id
+ORDER BY count(film_id) DESC ;
+-- 4.7 List the customers who have made over 40 rentals
+-- Table(s) to use: rental
+SELECT customer_id,
+       count(rental_id)
+FROM rental
+GROUP BY customer_id
+HAVING count(rental_id) > 40
+ORDER BY count(rental_id) DESC ;
+
+-- 4.8 We want to compare how the staff are performing against each other on a month to month basis. So
+-- for each month and year, show for each staff member how many payments they handled, the total amount
+-- of money they accepted, and the average payment amount
+-- Table(s) to use: payment
+SELECT date_part('Year', payment_date) "YEAR",
+       date_part('Month', payment_date) "MONTH",
+       staff_id,
+       count(*) "# PAYMENTS",
+       sum(amount) "TOTAL",
+       avg(amount) "AVG"
+FROM payment
+GROUP BY 1,2,3
+ORDER BY 1,2,3;
+
+
+-- 4.9 Write a query to show the number of rentals that were returned within 3 days, the number returned
+-- in 3 or more days, and the number never returned (for the logical comparison check you can use the following
+-- code snippet to compare against an interval: where return_date - rental_date < interval ‘3 days’)
+-- Table(s) to use: rental
+SELECT
+    case
+        when return_date - rental_date < interval '3 days' then 'within 3 days'
+        when return_date - rental_date >= interval '3 days' then '3 days or more'
+        else 'not returned'
+end,
+    count(*)
+FROM rental
+GROUP BY 1
+ORDER BY 1;
+
+-- 4.10 Write a query to give counts of the films by their length in groups of 0 - 1hrs, 1 - 2hrs, 2 - 3hrs,
+-- and 3hrs+ (note: you might get slightly different numbers if doing inclusive or exclusive grouping -
+-- but don’t sweat it!)
+-- Table(s) to use: film
+SELECT
+    case
+        when length <= 60 then '0 - 1hrs'
+        when length > 60 and length <= 120 then '1 - 2hrs'
+        when length > 120 and length <= 180 then '2 - 3hrs'
+        when length > 180 then '3hrs+'
+        end ,
+    count(*)
+FROM film
+GROUP BY 1;
+
+-- 4.11 Explain why in the following query we obtain two different results for the average
+-- film length. Which one is correct?
+-- A) avg excludes null column, sum / count -> count(*) will include row with null value in amount;
+select
+            1.0 * sum(length) / count(*) as avg1,
+            1.0 * avg(length) as avg2
+from film;
+
+-- 4.12 Write a query to return the average rental duration for each customer in descending order
+SELECT customer_id,
+       avg(return_date - rental_date)
+FROM rental
+GROUP BY customer_id
+ORDER BY avg(return_date - rental_date) DESC ;
+
+-- 4.13 Return a list of customer where all payments they’ve made have been over $2 (lookup the bool_and
+-- aggregate function which will be useful here)
+-- Table(s) to use: payment
+SELECT customer_id,
+       count(*) filter ( where amount > 2 ) "# payment over 2$"
+FROM payment
+GROUP BY customer_id;
+
+-- 4.14 As a final fun finish to this chapter, run the following query to see a cool way you can generate
+-- ascii histogram charts. Look up the repeat function (you’ll find it under ‘String Functions and Operators’)
+-- to see how it works and change the output character…and don’t worry, I’ll explain the ::int bit in the next chapter!
+--
+select rating, repeat('*', (count(*) / 10)::int)
+from film
+where rating is not null
+group by rating;
+
