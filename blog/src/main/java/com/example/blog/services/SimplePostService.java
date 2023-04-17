@@ -2,6 +2,7 @@ package com.example.blog.services;
 
 import com.example.blog.domain.Post;
 import com.example.blog.exceptions.ResourceNotFoundException;
+import com.example.blog.model.CommentDto;
 import com.example.blog.model.PostDto;
 import com.example.blog.model.PostResponse;
 import com.example.blog.repositories.PostRepository;
@@ -12,13 +13,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class SimplePostService implements PostService {
 
   private final PostRepository postRepository;
 
   @Override
+  @Transactional
   public Long createPost(PostDto postDto) {
     return postRepository.save(toPost(postDto)).getId();
   }
@@ -57,6 +62,7 @@ public class SimplePostService implements PostService {
   }
 
   @Override
+  @Transactional
   public void deletePost(Long id) {
     postRepository.deleteById(id);
   }
@@ -81,6 +87,14 @@ public class SimplePostService implements PostService {
   }
 
   private PostDto toPostDto(Post post) {
-    return new PostDto(post.getId(), post.getTitle(), post.getDescription(), post.getContent());
+    return new PostDto(post.getId(),
+        post.getTitle(),
+        post.getDescription(),
+        post.getContent(),
+        post.getComments()
+            .stream()
+            .map(c -> new CommentDto(c.getId(), c.getName(), c.getEmail(), c.getBody()))
+            .collect(Collectors.toSet())
+    );
   }
 }

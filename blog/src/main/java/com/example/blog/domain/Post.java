@@ -33,7 +33,12 @@ public class Post {
   private String content;
 
   @Builder.Default
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post")
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "post", fetch = FetchType.LAZY)
   private Set<Comment> comments = new HashSet<>();
+
+  public void addComment(Comment comment) {
+    comments.add(comment);
+    comment.setPost(this);
+  }
 }
 

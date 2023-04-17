@@ -4,6 +4,7 @@ import com.example.blog.model.PostDto;
 import com.example.blog.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -14,8 +15,12 @@ import java.net.URI;
 public class PostController {
 
   private final PostService postService;
+
   @PostMapping
+  // inject jwt token into method parameter
+  @PreAuthorize("hasAnyAuthority('SCOPE_post:write')")
   public ResponseEntity<?> createPost(@RequestBody PostDto postDto) {
+
     Long postId = postService.createPost(postDto);
     return ResponseEntity.created(URI.create("/api/posts/" + postId)).build();
   }
@@ -37,14 +42,17 @@ public class PostController {
   }
 
   @PutMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> updatePost(@RequestBody PostDto postDto) {
     var updatedPost = postService.updatePost(postDto);
     return ResponseEntity.ok(updatedPost);
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> deletePost(@PathVariable Long id) {
     postService.deletePost(id);
     return ResponseEntity.noContent().build();
   }
+
 }
