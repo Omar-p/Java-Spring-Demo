@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -27,7 +28,7 @@ public class BootcampReactiveApplication {
 				.path("/customers", builder -> builder
 						.GET("", request -> {
 							return ServerResponse.ok()
-								.body(customerRepository.findAll(), Customer.class);
+									.body(customerRepository.findAll(), Customer.class);
 						})
 				)
 				.build();
@@ -43,9 +44,11 @@ interface CustomerRepository extends ReactiveCrudRepository<Customer, String> {
 class CustomerInitializer implements ApplicationRunner {
 
 
+	private final DatabaseClient databaseClient;
 	private final CustomerRepository customerRepository;
 
-	CustomerInitializer(CustomerRepository customerRepository) {
+	CustomerInitializer(DatabaseClient databaseClient, CustomerRepository customerRepository) {
+		this.databaseClient = databaseClient;
 		this.customerRepository = customerRepository;
 	}
 
@@ -53,10 +56,16 @@ class CustomerInitializer implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		customerRepository.deleteAll()
 				.thenMany(
-		Flux.just("omar", "hosam")
-				.map(c -> new Customer(null, c))
-				.flatMap(customerRepository::save)
+						Flux.just("omar", "hosam")
+								.map(c -> new Customer(null, c))
+								.flatMap(customerRepository::save)
 				)
+				.subscribe(System.out::println);
+		this.databaseClient
+				.sql("select * from customer")
+				.fetch()
+				.all()
+				.doOnComplete(() -> System.out.println("done"))
 				.subscribe(System.out::println);
 	}
 }
