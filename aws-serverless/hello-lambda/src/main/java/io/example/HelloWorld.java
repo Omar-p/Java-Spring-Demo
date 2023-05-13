@@ -2,7 +2,7 @@ package io.example;
 
 public class HelloWorld {
 
-  public void handleRequest(String input) {
-    System.out.printf("Hello, %s!%n", input);
+  public String handleRequest(String input) {
+    return String.format("Hello, %s!%n", input);
   }
 }
