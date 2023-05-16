@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>coffeshop-hexagonal-architecture</artifactId>
+    <artifactId>coffeeshop-hexagonal-architecture</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>coffeshop-application</module>
-        <module>coffeshop-infrastructure</module>
+        <module>coffeeshop-application</module>
+        <module>coffeeshop-infrastructure</module>
     </modules>
 
     <properties>
