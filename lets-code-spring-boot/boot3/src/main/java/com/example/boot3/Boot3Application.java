@@ -82,6 +82,7 @@ public class Boot3Application {
         "postgres",
         "password"
     );// terrible choice for production  -> one connection on every call (not a pool.
+
     JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
     var customerService = new DefaultCustomerService(jdbcTemplate);
 
