@@ -84,7 +84,6 @@ public class Boot3Application {
     );// terrible choice for production  -> one connection on every call (not a pool.
 
     JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-    var customerService = new DefaultCustomerService(jdbcTemplate);
 
     var cs = transactionalCustomerService(new TransactionTemplate(new DataSourceTransactionManager(dataSource)), new DefaultCustomerService(jdbcTemplate));
     cs.all().forEach(c -> log.info("Customer: {}", c));
