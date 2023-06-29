@@ -25,8 +25,10 @@ import java.util.stream.Stream;
 @SpringBootApplication
 public class RsocketGreetingServiceApplication {
 
+  @SneakyThrows
   public static void main(String[] args) {
     SpringApplication.run(RsocketGreetingServiceApplication.class, args);
+    System.in.read();
   }
 
 }
@@ -77,9 +79,7 @@ class Producer {
 
     TcpServerTransport tcpServerTransport = TcpServerTransport.create(7000);
     RSocketServer.create(socketAcceptor)
-
         .bind(tcpServerTransport)
-
         .block();
   }
 }
