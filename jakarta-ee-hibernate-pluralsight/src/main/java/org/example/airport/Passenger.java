@@ -11,18 +11,62 @@ import java.util.List;
 
 @Entity
 @Table(name = "PASSENGERS")
+@SecondaryTables(
+    {
+        @SecondaryTable(
+            name = "ADDRESSES",
+            pkJoinColumns = @PrimaryKeyJoinColumn(name = "ID", referencedColumnName = "PASSENGER_ID")
+        ),
+        @SecondaryTable(
+            name = "PHONES",
+            pkJoinColumns = @PrimaryKeyJoinColumn(name = "ID", referencedColumnName = "PASSENGER_ID")
+        )
+    }
+)
 @Access(AccessType.FIELD)
 @NoArgsConstructor
 public class Passenger {
 
   @Id
-  @Column(name = "ID")
+  @Getter
+  @Column(name = "PASSENGER_ID")
   private int id;
 
   @Column(name = "NAME")
   @Getter
   @Setter
   private String name;
+
+  @Column(name = "PASSENGER_ADDRESS", table = "ADDRESSES", columnDefinition = "VARCHAR(25) NOT NULL")
+  @Getter
+  @Setter
+  private String address;
+
+  @Column(name ="ZIP_CODE", table = "ADDRESSES", columnDefinition = "VARCHAR(5) NOT NULL")
+  @Getter
+  @Setter
+  private String zipCode;
+
+  @Column(name ="CITY", table = "ADDRESSES", columnDefinition = "VARCHAR(25) NOT NULL")
+  @Getter
+  @Setter
+  private String city;
+
+  @Column(name = "AREA_CODE", table = "PHONES", columnDefinition = "VARCHAR(5) NOT NULL")
+  @Getter
+  @Setter
+  private String areaCode;
+
+
+  @Column(name = "PREFIX", table = "PHONES", columnDefinition = "VARCHAR(5) NOT NULL")
+  @Getter
+  @Setter
+  private String prefix;
+
+  @Column(name = "LINE_NUMBER", table = "PHONES", columnDefinition = "VARCHAR(10) NOT NULL")
+  @Getter
+  @Setter
+  private String lineNumber;
 
   @ManyToOne
   @JoinColumn(name = "AIRPORT_ID")
