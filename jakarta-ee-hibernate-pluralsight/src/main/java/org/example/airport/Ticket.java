@@ -9,16 +9,20 @@ import lombok.Setter;
 @Table(name = "TICKETS")
 @Access(AccessType.FIELD)
 @NoArgsConstructor
+@IdClass(TicketKey.class)
 public class Ticket {
 
-  @Id
-  @Column(name = "ID")
-  private int id;
 
   @Getter
   @Setter
-  @Column(name = "NUMBER")
+  @Id
+  private String series;
+
+  @Getter
+  @Setter
+  @Id
   private String number;
+
 
   @ManyToOne
   @JoinColumn(name = "PASSENGER_ID")
@@ -26,8 +30,5 @@ public class Ticket {
   @Setter
   private Passenger passenger;
 
-  public Ticket(int id, String number) {
-    this.id = id;
-    this.number = number;
-  }
+
 }
